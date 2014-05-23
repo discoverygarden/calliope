@@ -14,16 +14,13 @@ getjdkinclude()
   fi
   return 
 }
-if [ $USER = "root" ]; then
-  if [ `uname` = "Darwin" ]; then
-    LIBSUFFIX="dylib"
-    LIBSUFFIX="so"
-   
-  fi
-  gcc -c -DJNI -Iinclude -I$JDKINC -O0 -Wall -g3 -fPIC src/*.c 
-  gcc *.o -shared -L/usr/local/lib -laspell -o libAeseSpeller.$LIBSUFFIX
-  mv libAeseSpeller.$LIBSUFFIX /usr/local/lib/
-  rm *.o
-else
-  echo "Need to be root. Did you use sudo?"
+
+if [ `uname` = "Darwin" ]; then
+  LIBSUFFIX="dylib"
+  LIBSUFFIX="so"
+ 
 fi
+gcc -c -DJNI -Iinclude -I$JDKINC -O0 -Wall -g3 -fPIC src/*.c 
+gcc *.o -shared -L/usr/local/lib -laspell -o libAeseSpeller.$LIBSUFFIX
+mv libAeseSpeller.$LIBSUFFIX /usr/local/lib/
+rm *.o
