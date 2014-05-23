@@ -1,6 +1,5 @@
 HASREADLINK=`which readlink`
 JAVAC=`which javac`
-JDKINCLUDEDIRNAME="include"
 getjdkinclude()
 {
   if [ -n "$HASREADLINK" ]; then 
@@ -11,16 +10,18 @@ getjdkinclude()
     echo `dirname $(dirname $JAVAC)`/$JDKINCLUDEDIRNAME
   else
     echo "need readlink. please install."
+    exit    
   fi
   return 
 }
-
 if [ `uname` = "Darwin" ]; then
   LIBSUFFIX="dylib"
+  JDKINCLUDEDIRNAME="Headers"
+else
   LIBSUFFIX="so"
- 
+  JDKINCLUDEDIRNAME="include"
 fi
-gcc -c -DJNI -Iinclude -I$JDKINC -O0 -Wall -g3 -fPIC src/*.c 
-gcc *.o -shared -L/usr/local/lib -laspell -o libAeseSpeller.$LIBSUFFIX
-mv libAeseSpeller.$LIBSUFFIX /usr/local/lib/
-rm *.o
+JDKINC=`getjdkinclude`
+gcc -c -DHAVE_MEMMOVE -DJNI -I$JDKINC -Iinclude -O0 -Wall -g3 -fPIC src/aesespeller.c
+gcc *.o -shared -laspell -o libAeseSpeller.$LIBSUFFIX
+cp libAeseSpeller.$LIBSUFFIX /usr/local/lib
